@@ -3,14 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace KomodoCafe
 {
     public class ProgramUI
     {
-        //POCO
-
         private MenuItemRepository _repo = new MenuItemRepository();
 
         public void Run()
@@ -22,6 +21,7 @@ namespace KomodoCafe
 
         private void Menu()
         {
+            Console.Clear();
             Console.WriteLine($"1. Add a menu item" +
                 $"\n2. List all menu items" +
                 $"\n3. Update a menu item" +
@@ -53,6 +53,8 @@ namespace KomodoCafe
             else
             {
                 Console.Write("Only numbers are accepted!");
+                Thread.Sleep(3000);
+                Menu();
             }
 
         }
@@ -60,15 +62,15 @@ namespace KomodoCafe
         private bool CreateNewMenuItem()
         {
             int itemCount = 0;
-            MenuItem newItem = GetValuesForMenuItemObject();
-            _repo.AddMenuItemToRepo(newItem);
+            MenuItem newMenuItem = GetValuesForMenuItemObject();
+            _repo.AddMenuItemToRepo(newMenuItem);
             if (_repo.ToString().Count() > itemCount)
             {
-                Console.WriteLine($"Added #: {newItem.MealNumber}" +
-                    $"\n Meal Name: {newItem.Name}" +
-                    $"\n Description: {newItem.Description}" +
-                    $"\n Ingredients: {newItem.Ingredients}" +
-                    $"\n Price: {newItem.Price}");
+                Console.WriteLine($"Added #: {newMenuItem.MealNumber}" +
+                    $"\n Meal Name: {newMenuItem.Name}" +
+                    $"\n Description: {newMenuItem.Description}" +
+                    $"\n Ingredients: {newMenuItem.Ingredients}" +
+                    $"\n Price: {newMenuItem.Price}");
                 return true;
             }
             else
@@ -83,18 +85,20 @@ namespace KomodoCafe
         {
             Console.Clear();
             List<MenuItem> menuItems = _repo.GetAllMenuItems();
-            foreach (MenuItem item in menuItems)
+            foreach (MenuItem menuItem in menuItems)
             {
-                Console.WriteLine($"Meal #: {item.MealNumber}" +
-                    $"\nMeal Name: {item.Name}" +
-                    $"\nDescription: {item.Description}");
+                Console.WriteLine($"Meal #: {menuItem.MealNumber}" +
+                    $"\nMeal Name: {menuItem.Name}" +
+                    $"\nDescription: {menuItem.Description}");
                 Console.Write($"Ingredients:");
-                foreach (string ingredient in item.Ingredients)
+                foreach (string ingredient in menuItem.Ingredients)
                 {
                     Console.Write($" {ingredient}");
                 }
-                Console.WriteLine($"\nPrice: {item.Price}");
-                Console.WriteLine();
+                Console.WriteLine($"\nPrice: {menuItem.Price}");
+                Console.WriteLine("Press any key to continue");
+                Console.ReadLine();
+                Menu();
             }
         }
 
@@ -139,10 +143,10 @@ namespace KomodoCafe
         {
             Console.Clear();
             Console.Write("Enter a menu item number: ");
-            var itemNumber = Convert.ToInt32(Console.ReadLine());
+            var menuNumber = Convert.ToInt32(Console.ReadLine());
 
             Console.Write("Enter a menu item name: ");
-            string itemName = Console.ReadLine();
+            string menuName = Console.ReadLine();
 
             Console.Write("Enter a description: ");
             string description = Console.ReadLine();
@@ -170,7 +174,7 @@ namespace KomodoCafe
             Console.Write("Enter a price: ");
             double itemPrice = Convert.ToDouble(Console.ReadLine());
 
-            MenuItem newMenuItem = new MenuItem(itemNumber, itemName, description, ingredientList, itemPrice);
+            MenuItem newMenuItem = new MenuItem(menuNumber, menuName, description, ingredientList, itemPrice);
             return newMenuItem;
         }
 
