@@ -34,7 +34,7 @@ namespace KomodoCafe
                 switch (selectedOption)
                 {
                     case 1:
-                        CreateNewMenuItem();
+                        AddItemToMenu();
                         break;
                     case 2:
                         DisplayAllMenuItems();
@@ -59,25 +59,31 @@ namespace KomodoCafe
 
         }
 
-        private bool CreateNewMenuItem()
+        private void AddItemToMenu()
         {
+            Console.Clear();
             int itemCount = 0;
             MenuItem newMenuItem = GetValuesForMenuItemObject();
             _repo.AddMenuItemToRepo(newMenuItem);
             if (_repo.ToString().Count() > itemCount)
             {
-                Console.WriteLine($"Added #: {newMenuItem.MealNumber}" +
-                    $"\n Meal Name: {newMenuItem.Name}" +
-                    $"\n Description: {newMenuItem.Description}" +
-                    $"\n Ingredients: {newMenuItem.Ingredients}" +
-                    $"\n Price: {newMenuItem.Price}");
-                return true;
+                Console.Write($"Added #: {newMenuItem.MealNumber}" +
+                    $"\nMeal Name: {newMenuItem.Name}" +
+                    $"\nDescription: {newMenuItem.Description}" +
+                    $"\nIngredients: ");
+                foreach (string ingredient in newMenuItem.Ingredients)
+                {
+                    Console.Write($" {ingredient}");
+                }
+                Console.Write($"\nPrice: {newMenuItem.Price}\n");
+
+                Console.Write("Press and key to return to the menu");
+                Menu();
             }
             else
             {
                 Console.WriteLine("There are no items in the menu!");
                 Menu();
-                return false;
             }
         }
 
@@ -96,17 +102,18 @@ namespace KomodoCafe
                     Console.Write($" {ingredient}");
                 }
                 Console.WriteLine($"\nPrice: {menuItem.Price}");
-                Console.WriteLine("Press any key to continue");
-                Console.ReadLine();
-                Menu();
+                Console.WriteLine();
             }
+            Console.WriteLine("Press any key to continue");
+            Console.ReadLine();
+            Menu();
         }
 
         private void DisplayMenuItemByNumber()
         {
             Console.Clear();
             DisplayAllMenuItems();
-            Console.WriteLine("Enter the # for the menu item you wish to edit: ");
+            Console.Write("Enter the # for the menu item to edit: ");
             string userInput = Console.ReadLine();
             int selectedOption;
             if (int.TryParse(userInput, out selectedOption))
@@ -129,12 +136,50 @@ namespace KomodoCafe
 
         private void UpdateExistingMenuItem()
         {
-
+            Console.Clear();
+            Console.WriteLine("Enter the item number of the item you wish to update");
+            string userInput = Console.ReadLine();
+            int selectedOption;
+            if (int.TryParse(userInput, out selectedOption))
+            {
+                MenuItem menuItem = _repo.GetMenuItemByMealNumber(selectedOption);
+                MenuItem newMenuItem = GetValuesForMenuItemObject();
+                menuItem.Name = newMenuItem.Name;
+                menuItem.Description = newMenuItem.Description;
+                menuItem.Ingredients = newMenuItem.Ingredients;
+                menuItem.MealNumber = newMenuItem.MealNumber;
+                menuItem.Price = newMenuItem.Price;
+            }
+            else
+            {
+                Console.WriteLine("Unable to locate that menu item.");
+                Thread.Sleep(4000);
+                Menu();
+            }
         }
 
         private void DeleteExistingMenuItem()
         {
+            Console.Clear();
+            Console.Write("Enter the # of the menu item you want to delete: ");
+            string userInput = Console.ReadLine();
+            int itemNumber;
+            int.TryParse(userInput, out itemNumber);
 
+            foreach (MenuItem menuItem in _repo.GetAllMenuItems())
+            {
+                if (menuItem.MealNumber == itemNumber)
+                {
+                    _repo.DeleteMenuItem(itemNumber);
+                }
+
+                else
+                {
+                    Console.WriteLine("Unable to locate that menu item.");
+                    Thread.Sleep(4000);
+                    Menu();
+                }
+            }
         }
 
         //Helper method
@@ -151,28 +196,38 @@ namespace KomodoCafe
             Console.Write("Enter a description: ");
             string description = Console.ReadLine();
 
-            Console.WriteLine("Provide a list of ingredients (enter 'stop' to finish:");
-            bool isTrue = true;
+            Console.WriteLine("Enter each ingredient and press 'enter'. (Enter 'stop' to finish):");
+            bool isRunning = true;
             List<string> ingredientList = new List<string>();
-            while (isTrue)
+
+            while (isRunning)
             {
                 string ingredient = Console.ReadLine();
                 if (ingredient.ToLower() == "stop")
                 {
-                    isTrue = false;
+                    isRunning = false;
+                    break;
+                }
+                if(String.IsNullOrWhiteSpace(ingredient) || String.IsNullOrEmpty(ingredient))
+                {
+                    Console.WriteLine("Ingredient cannot be empty!");
+                    break;
                 }
                 ingredientList.Add(ingredient);
             }
-            if (ingredientList.Count > 0)
+
+            if (ingredientList.Count <= 0)
             {
-                foreach (string ingredient in ingredientList)
-                {
-                    Console.WriteLine($" {ingredient}");
-                }
+                Console.WriteLine("Empty list of ingredients!");
             }
 
             Console.Write("Enter a price: ");
-            double itemPrice = Convert.ToDouble(Console.ReadLine());
+            string userInput = Console.ReadLine();
+            double itemPrice;
+            if (double.TryParse(userInput, out itemPrice))
+            {
+
+            }
 
             MenuItem newMenuItem = new MenuItem(menuNumber, menuName, description, ingredientList, itemPrice);
             return newMenuItem;

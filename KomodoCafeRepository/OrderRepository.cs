@@ -1,0 +1,7 @@
+﻿namespace KomodoCafeRepository
+{
+    class OrderRepository
+    {
+
+    }
+}

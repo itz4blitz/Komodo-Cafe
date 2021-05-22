@@ -47,6 +47,8 @@
   <ItemGroup>
     <Compile Include="MenuItem.cs" />
     <Compile Include="MenuItemRepository.cs" />
+    <Compile Include="Order.cs" />
+    <Compile Include="OrderRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
